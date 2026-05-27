@@ -12,7 +12,7 @@ let ordenes = [];
 let contadorId = 1;
 
 // URL de conexión hacia el otro microservicio
-const CATALOGO_URL = process.env.CATALOGO_URL || 'https://proyecto-libreri-9609x7ols-carlos-bojorquez-s-projects.vercel.app/api/catalogo/libros';
+const CATALOGO_URL = process.env.CATALOGO_URL || 'https://proyecto-libreri-9609x7ols-carlos-bojorquez-s-projects.vercel.app/api/libros';
 
 // Endpoint proxy: obtener el catálogo completo desde el servicio de catálogo
 app.get('/api/libros', async (req, res) => {

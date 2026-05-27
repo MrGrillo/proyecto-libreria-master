@@ -6,9 +6,8 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/catalogo/(.*)", "dest": "servicio-catalogo/server.js" },
-    { "src": "/api/ordenes/(.*)", "dest": "servicio-ordenes/server.js" },
-    { "src": "/api/libros", "dest": "servicio-ordenes/server.js" },
+    { "src": "/api/libros(.*)", "dest": "servicio-catalogo/server.js" },
+    { "src": "/api/ordenes(.*)", "dest": "servicio-ordenes/server.js" },
     { "src": "/(.*)", "dest": "public/$1" }
   ]
 }
