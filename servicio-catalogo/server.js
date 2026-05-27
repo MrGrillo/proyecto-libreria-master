@@ -51,3 +51,4 @@ app.post('/api/libros/:id/restar-stock', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servicio de Catálogo corriendo en http://localhost:${PORT}`);
 });
+module.exports = app;

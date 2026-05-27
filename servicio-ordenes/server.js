@@ -12,7 +12,7 @@ let ordenes = [];
 let contadorId = 1;
 
 // URL de conexión hacia el otro microservicio
-const CATALOGO_URL = 'http://localhost:3001/api/libros';
+const CATALOGO_URL = process.env.CATALOGO_URL || 'https://proyecto-libreri-9609x7ols-carlos-bojorquez-s-projects.vercel.app/api/catalogo/libros';
 
 // Endpoint proxy: obtener el catálogo completo desde el servicio de catálogo
 app.get('/api/libros', async (req, res) => {
@@ -91,3 +91,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.listen(PORT, () => {
     console.log(`Servicio de Órdenes corriendo en http://localhost:${PORT}`);
 });
+
+module.exports = app;

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "servicio-catalogo/server.js", "use": "@vercel/node" },
+    { "src": "servicio-ordenes/server.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/catalogo/(.*)", "dest": "servicio-catalogo/server.js" },
+    { "src": "/api/ordenes/(.*)", "dest": "servicio-ordenes/server.js" },
+    { "src": "/api/libros", "dest": "servicio-ordenes/server.js" },
+    { "src": "/(.*)", "dest": "public/$1" }
+  ]
+}
