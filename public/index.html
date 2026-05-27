@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Servicio de Órdenes - Librería</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <main class="container">
+        <h1>Compra de Libros</h1>
+        <p>Ingresa el ID del libro, la cantidad y tu nombre para generar una orden.</p>
+
+        <form id="ordenForm" class="card">
+            <label>
+                Libro ID
+                <input type="number" id="libroId" name="libroId" min="1" required />
+            </label>
+            <button type="button" id="mostrarLibros" class="secondary">Mostrar catálogo de libros</button>
+            <section id="catalogoLibros" class="card hidden">
+                <h2>Catálogo de libros</h2>
+                <ul id="librosLista" class="catalogue-list"></ul>
+            </section>
+            <label>
+                Cantidad
+                <input type="number" id="cantidad" name="cantidad" min="1" required />
+            </label>
+            <label>
+                Cliente
+                <input type="text" id="cliente" name="cliente" required />
+            </label>
+            <button type="submit">Realizar compra</button>
+        </form>
+
+        <section id="notificaciones" class="notifications"></section>
+
+        <section class="card">
+            <h2>Orden generada</h2>
+            <pre id="ordenResumen" class="summary">No hay orden creada aún.</pre>
+        </section>
+
+        <section class="card">
+            <div class="ordenes-header">
+                <h2>Órdenes existentes</h2>
+                <button id="refrescarOrdenes">Refrescar</button>
+            </div>
+            <ul id="ordenesLista" class="orders-list"></ul>
+        </section>
+    </main>
+</body>
+</html>
