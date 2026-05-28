@@ -111,14 +111,14 @@ ordenForm.addEventListener('submit', async (event) => {
 
         const data = await response.json();
 
-      if (response.ok) {
-            mostrarNotificacion('Orden creada con éxito.', 'success');
-            mostrarResumenOrden(data.orden);  // <- línea actual
-            cargarOrdenes();
-        } else {
-            const mensaje = data.error || 'Ocurrió un error al procesar la orden.';
-            mostrarNotificacion(mensaje, 'error');
-        }
+    if (response.ok) {
+         mostrarNotificacion('Orden creada con éxito.', 'success');
+         mostrarResumenOrden(data);  // muestra todo el JSON de éxito
+         cargarOrdenes();
+    } else {
+         mostrarNotificacion(data.error || 'Ocurrió un error.', 'error');
+         mostrarResumenOrden(data);  // también muestra el JSON de error
+    }
     } catch (error) {
         mostrarNotificacion('Error de comunicación con el servicio de órdenes.', 'error');
     }
