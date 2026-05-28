@@ -1,92 +1,71 @@
 // servicio-ordenes/server.js
 const express = require('express');
-const axios = require('axios');
-const path = require('path');
 const app = express();
 const PORT = 3002;
 
 app.use(express.json());
 
-// Arreglo en memoria para almacenar las órdenes generadas
+// Copia de los libros (mismos datos que el catálogo)
+let libros = [
+    { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", precio: 250, stock: 10 },
+    { id: 2, titulo: "Don Quijote de la Mancha", autor: "Miguel de Cervantes", precio: 300, stock: 5 },
+    { id: 3, titulo: "El Principito", autor: "Antoine de Saint-Exupéry", precio: 150, stock: 2 },
+    { id: 4, titulo: "1984", autor: "George Orwell", precio: 200, stock: 8 },
+    { id: 5, titulo: "Pedro Páramo", autor: "Juan Rulfo", precio: 180, stock: 0 }
+];
+
 let ordenes = [];
 let contadorId = 1;
 
-// URL de conexión hacia el otro microservicio
-const CATALOGO_URL = process.env.CATALOGO_URL || 'https://proyecto-libreri-9609x7ols-carlos-bojorquez-s-projects.vercel.app/api/catalogo/libros';
-
-// Endpoint proxy: obtener el catálogo completo desde el servicio de catálogo
-app.get('/api/libros', async (req, res) => {
-    try {
-        const respuestaCatalogo = await axios.get(CATALOGO_URL);
-        res.status(200).json(respuestaCatalogo.data);
-    } catch (error) {
-        res.status(500).json({ error: 'No se pudo obtener el catálogo de libros.' });
-    }
+// El frontend llama /api/libros — respondemos con el catálogo
+app.get('/api/libros', (req, res) => {
+    res.status(200).json(libros);
 });
 
-// Endpoint: Crear una nueva orden de compra
-app.post('/api/ordenes', async (req, res) => {
+// Crear una nueva orden
+app.post('/api/ordenes', (req, res) => {
     const { libroId, cantidad, cliente } = req.body;
 
-    // Validación básica de entrada
     if (!libroId || !cantidad || !cliente) {
         return res.status(400).json({ error: "Faltan datos obligatorios: libroId, cantidad o cliente." });
     }
 
-    try {
-        // 1. Comunicación Síncrona: Preguntar al Servicio de Catálogo por el libro
-        const respuestaCatalogo = await axios.get(`${CATALOGO_URL}/${libroId}`);
-        const libro = respuestaCatalogo.data;
+    const libro = libros.find(l => l.id === libroId);
 
-        // 2. Lógica del Reto Extra: Verificar si hay suficiente Stock
-        if (libro.stock < cantidad) {
-            return res.status(400).json({ 
-                error: `Fondos de inventario insuficientes. Solo quedan ${libro.stock} unidades de este libro.` 
-            });
-        }
-
-        // 3. Calcular Total a Pagar
-        const totalAPagar = libro.precio * cantidad;
-
-        // 4. Crear el registro de la orden
-        const nuevaOrden = {
-            id: contadorId++,
-            cliente,
-            libroId,
-            tituloLibro: libro.titulo,
-            cantidad,
-            totalAPagar,
-            fecha: new Date()
-        };
-        ordenes.push(nuevaOrden);
-
-        // 5. Opcional/Recomendado: Avisarle al catálogo que reste el stock vendido
-        await axios.post(`${CATALOGO_URL}/${libroId}/restar-stock`, { cantidad });
-
-        // Responder con éxito (201 Created)
-        res.status(201).json({
-            mensaje: "¡Orden generada con éxito!",
-            orden: nuevaOrden
-        });
-
-    } catch (error) {
-        // Manejo de errores en la comunicación HTTP
-        if (error.response && error.response.status === 404) {
-            // El catálogo respondió con un 404 explícito
-            return res.status(404).json({ error: "La orden no pudo procesarse porque el libro no existe." });
-        }
-        // Cualquier otro fallo de red o del servidor
-        res.status(500).json({ error: "Error de comunicación entre los servicios de la plataforma." });
+    if (!libro) {
+        return res.status(404).json({ error: "La orden no pudo procesarse porque el libro no existe." });
     }
+
+    if (libro.stock < cantidad) {
+        return res.status(400).json({ 
+            error: `Fondos de inventario insuficientes. Solo quedan ${libro.stock} unidades de este libro.` 
+        });
+    }
+
+    const totalAPagar = libro.precio * cantidad;
+    libro.stock -= cantidad;
+
+    const nuevaOrden = {
+        id: contadorId++,
+        cliente,
+        libroId,
+        tituloLibro: libro.titulo,
+        cantidad,
+        totalAPagar,
+        fecha: new Date()
+    };
+    ordenes.push(nuevaOrden);
+
+    res.status(201).json({
+        mensaje: "¡Orden generada con éxito!",
+        orden: nuevaOrden
+    });
 });
 
-// Endpoint adicional para que puedas ver todas las órdenes acumuladas
+// Ver todas las órdenes
 app.get('/api/ordenes', (req, res) => {
     res.json(ordenes);
 });
-
-// Servir frontend estático después de las rutas API
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
     console.log(`Servicio de Órdenes corriendo en http://localhost:${PORT}`);
