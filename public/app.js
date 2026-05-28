@@ -19,8 +19,8 @@ function mostrarNotificacion(mensaje, tipo = 'success') {
     notificaciones.prepend(item);
 }
 
-function mostrarResumenOrden(orden) {
-    ordenResumen.textContent = `ID Orden: ${orden.id}\nCliente: ${orden.cliente}\nLibro: ${orden.tituloLibro}\nCantidad: ${orden.cantidad}\nTotal a pagar: $${orden.totalAPagar}\nFecha: ${new Date(orden.fecha).toLocaleString()}`;
+function mostrarResumenOrden(data) {
+    ordenResumen.textContent = JSON.stringify(data, null, 2);
 }
 
 async function cargarOrdenes() {
@@ -111,9 +111,9 @@ ordenForm.addEventListener('submit', async (event) => {
 
         const data = await response.json();
 
-        if (response.ok) {
+      if (response.ok) {
             mostrarNotificacion('Orden creada con éxito.', 'success');
-            mostrarResumenOrden(data.orden);
+            mostrarResumenOrden(data.orden);  // <- línea actual
             cargarOrdenes();
         } else {
             const mensaje = data.error || 'Ocurrió un error al procesar la orden.';
